@@ -97,3 +97,9 @@ h2. Generate Site:
   </code>
 </pre>
 
+h2. Credits:
+
+* "zroger jekyll-minimagick":https://github.com/zroger/jekyll-minimagick
+* "krig jekyll-plugins":https://github.com/krig/jekyll-plugins
+* "rough gallery plugin for jekyll":http://baldowl.github.com/2011/04/13/rough-gallery-plugin-for-jekyll.html
+* "jekyll filckr set tag":https://github.com/tsmango/jekyll_flickr_set_tag
