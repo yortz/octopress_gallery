@@ -1,0 +1,99 @@
+h1. Octopress Gallery Plugin:
+
+* minimagick.rb: this plugin will automatically generate thumbnails and resize any image file (png,jpg,jpeg,gif) contained in any sub folder added to this location /source/images/galleries.
+
+* gallery_tag.rb: this plugin will create an image list from each gallery folder present in /source/images/galleries. You can easily change the path reflecting your own working directory structure by setting your own BASE_DIR in gallery_tag.rb.
+
+h2. Install:
+
+* copy both plugins or clone this repo in your octopress_project/plugins folder.
+
+h2. MiniMagick Plugin (mini_magick.rb):
+
+* Add mini_magick to your Gemfile
+
+<pre>
+  <code>
+  #Gemfile
+  gem 'mini_magick'
+  </code>
+</pre>
+
+* create a new "galleries" folder in your octopress_project/source/images dir (you can choose to edit this accordingly to the value of BASE_DIR in gallery_tag.rb).
+
+* add some folders with images (those can be any png,jpg,jpeg,gif) to your newly created "source/images/galleries" dir:
+
+<pre>
+  <code>
+  |-galleries
+  |---gallery_1
+  |------image1.jpg
+  |------image2.jpg
+  |---gallery_2
+  |------image3.jpg
+  |------image4.jpg
+  </code>
+</pre>
+
+* this will automatically loop through each gallery folder and manipulate images based on the commands defined in your _config.yml file (adjust and edit settings accordingly to your own needs).
+
+<pre>
+  <code>
+  # _config.yml
+  mini_magick:
+    gallery_1_thumbnail:
+      source: images/galleries/gallery_1
+      destination: images/galleries/gallery_1/thumbs
+      commands:
+        - thumbnail: "140x140^"
+        - crop: "140x140-0x0"
+    gallery_1_medium:
+      source: images/galleries/gallery_1
+      destination: images/galleries/gallery_1/medium
+      commands:
+        - resize: "600x400"
+    gallery_2_thumbnail:
+      source: images/galleries/gallery_2
+      destination: images/galleries/gallery_2/thumbs
+      commands:
+        - thumbnail: "140x140^"
+        - crop: "140x140-0x0"
+    gallery_2_medium:
+      source: images/galleries/test
+      destination: images/galleries/gallery_2/medium
+      commands:
+        - resize: "200x200"
+  </code>
+</pre>
+
+
+h2. Gallery Plugin (gallery_tag.rb):
+
+* create a new post (or page) in source/_posts and add the image_list liquid filter (don't forget to pass it the name of the gallery folder: e.g. in this post I am creating the image_list for the gallery_1 folder in images/galleries so i am passing the name of the corresponding folder 'gallery_1')
+
+<pre>
+  <code>
+    #source/_posts/gallery_post.textile
+    --- 
+    layout: post
+    title: gallery post
+    categories: my category
+    ---
+    
+      {{ 'gallery_1' | image_list }}
+      
+  </code>
+</pre>
+
+* edit or modify the generated code in gallery_tag.rb to make it work with lightbox, fancybox or any other additional piece of js you are using to enhance your generated image gallery list.
+
+h2. Generate Site:
+
+* This will automatically call both plugins
+
+<pre>
+  <code>
+    $: rake generate
+  </code>
+</pre>
+
