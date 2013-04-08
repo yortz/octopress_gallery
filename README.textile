@@ -30,7 +30,7 @@ h2. MiniMagick Plugin (mini_magick.rb):
 
 <pre>
   <code>
-  |-_galleries
+  |--_galleries
   |---gallery_1
   |------image1.jpg
   |------image2.jpg
