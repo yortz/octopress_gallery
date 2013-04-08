@@ -149,21 +149,21 @@ You can either run it manually after site creation, or if you prefer you can edi
 
 <pre>
 	<code>
-#Rakefile
-desc "Generate jekyll site"
-task :generate do
-  raise "### You haven't set anything up yet. First run `rake install` to set up an Octopress theme." unless File.directory?(source_dir)
-  puts "## Generating Site with Jekyll"
-  system "compass compile --css-dir #{source_dir}/_assets/stylesheets"
-  system "jekyll"
-  Rake::Task['generate_json_for_galleries'].invoke
-end
-
-desc "generate galleries json"
-task :generate_json_for_galleries do
-  puts "generating galleries.json"
-  Jekyll::GalleriesJsonGenerator.new.generate
-end
+  #Rakefile
+  desc "Generate jekyll site"
+  task :generate do
+    raise "### You haven't set anything up yet. First run `rake install` to set up an Octopress theme." unless File.directory?(source_dir)
+    puts "## Generating Site with Jekyll"
+    system "compass compile --css-dir #{source_dir}/_assets/stylesheets"
+    system "jekyll"
+    Rake::Task['generate_json_for_galleries'].invoke
+  end
+  
+  desc "generate galleries json"
+  task :generate_json_for_galleries do
+    puts "generating galleries.json"
+    Jekyll::GalleriesJsonGenerator.new.generate
+  end
 	</code>
 </pre>
 
@@ -173,7 +173,7 @@ h2. Gallery.js (gallery.js.coffee)
 
 <pre>
 	<code>
-<section id="gallery" data-gallery="your_gallery_folder_name_here" />
+  <section id="gallery" data-gallery="your_gallery_folder_name_here" />
 	</code>
 </pre>
 
@@ -183,7 +183,7 @@ h2. Generate Site:
 
 <pre>
   <code>
-$: rake generate
+  $: rake generate
   </code>
 </pre>
 
