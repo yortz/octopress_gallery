@@ -1,31 +1,36 @@
 h1. Octopress Gallery Plugin:
 
-* minimagick.rb: this plugin will automatically generate thumbnails and resize any image file (png,jpg,jpeg,gif) contained in any sub folder added to this location /source/images/galleries.
+The following branch will work with the "jekyll-assets":https://github.com/ixti/jekyll-assets plugin (read more "here":http://matt.coneybeare.me/how-to-setup-a-rails-like-asset-pipeline-with-octopress/ on how to make it work with octopress).
 
-* gallery_tag.rb: this plugin will create an image list from each gallery folder present in /source/images/galleries. You can easily change the path reflecting your own working directory structure by setting your own BASE_DIR in gallery_tag.rb.
+* minimagick.rb: this plugin will 
+
+- automatically generate thumbnails and resize any image file (png,jpg,jpeg,gif) contained in any sub folder added to this location /source/_galleries.
+
+- add the resized generated images to the assets folder as new AssetFile.
 
 h2. Install:
 
-* copy both plugins or clone this repo in your octopress_project/plugins folder.
+* Clone the repo and add the relevant files mantaining folder structure into your octopress install.
 
 h2. MiniMagick Plugin (mini_magick.rb):
 
-* Add mini_magick to your Gemfile
+* Add mini_magick & jekyll-assets to your Gemfile
 
 <pre>
   <code>
   #Gemfile
   gem 'mini_magick'
+  gem 'jekyll-assets'
   </code>
 </pre>
 
-* create a new "galleries" folder in your octopress_project/source/images dir (you can choose to edit this accordingly to the value of BASE_DIR in gallery_tag.rb).
+* create a new "_galleries" folder in your octopress_project/source dir (you can choose to edit this accordingly to the value of the relevant part in your _config.yml file).
 
-* add some folders with images (those can be any png,jpg,jpeg,gif) to your newly created "source/images/galleries" dir:
+* add some folders with images (those can be any png,jpg,jpeg,gif) to your newly created "source/_galleries" dir:
 
 <pre>
   <code>
-  |-galleries
+  |-_galleries
   |---gallery_1
   |------image1.jpg
   |------image2.jpg
@@ -37,59 +42,144 @@ h2. MiniMagick Plugin (mini_magick.rb):
 
 * this will automatically loop through each gallery folder and manipulate images based on the commands defined in your _config.yml file (adjust and edit settings accordingly to your own needs).
 
+* it will create a new AssetFile based on the name of your image and add that to the asset path (by default octopress_project/public/assets)
+
 <pre>
   <code>
   # _config.yml
   mini_magick:
     gallery_1_thumbnail:
-      source: images/galleries/gallery_1
-      destination: images/galleries/gallery_1/thumbs
+      source: _galleries/gallery_1
+      destination: _assets/images/galleries/gallery_1/thumbs
       commands:
         - thumbnail: "140x140^"
         - crop: "140x140-0x0"
     gallery_1_medium:
-      source: images/galleries/gallery_1
-      destination: images/galleries/gallery_1/medium
+      source: _galleries/gallery_1
+      destination: _assets/images/galleries/gallery_1/medium
       commands:
         - resize: "600x400"
     gallery_2_thumbnail:
-      source: images/galleries/gallery_2
-      destination: images/galleries/gallery_2/thumbs
+      source: _galleries/gallery_2
+      destination: _assets/images/galleries/gallery_2/thumbs
       commands:
         - thumbnail: "140x140^"
         - crop: "140x140-0x0"
     gallery_2_medium:
-      source: images/galleries/test
-      destination: images/galleries/gallery_2/medium
+      source: _galleries/test
+      destination: _assets/images/galleries/gallery_2/medium
       commands:
         - resize: "200x200"
+	   #
+	   # Plugin: jekyll-assets
+	   #
+	   assets:
+	     #
+	     # Pathname of the destination of generated (bundled) assets relative
+	     # to the destination of the root.
+	     #
+	     dirname: assets
+	     #
+	     # Base URL of assets paths.
+	     #
+	     baseurl: http://domain.com/assets/
+	     #
+	     # Pathnames where to find assets relative to the root of the site.
+	     #
+	     sources:
+	       - _assets/fonts
+	       - _assets/images
+	       - _assets/javascripts
+	       - _assets/jwplayer
+	       - _assets/pdf
+	       - _assets/stylesheets
+	       - _assets/videos
+	     #
+	     # Sets compressors for the specific types of file: `js`, or `css`.
+	     # No compression by default.
+	     #
+	     # Possible variants:
+	     #
+	     #     css  => 'yui', 'sass', nil
+	     #     js   => 'yui', 'uglifier', nil
+	     #
+	     compress:
+	       js:   'yui'
+	       css:  'yui'
+	     #
+	     # Sets cachebusting policy for generated assets.
+	     #
+	     # Possible variants:
+	     #
+	     #   none - disables cachebusting
+	     #
+	     #     source file:  _assets/javascripts/app.css
+	     #     output file:  _site/assets/javascriptis/app.css
+	     #     output URL:   /assets/javascripts/app.css
+	     #
+	     #   soft - leave filenames as-is, but `?cb=<md5>` suffix for URLs generated
+	     #          with `asset_path`, `javascript` and `stylesheet`:
+	     #
+	     #     source file:  _assets/javascripts/app.css
+	     #     output file:  _site/assets/javascriptis/app.css
+	     #     output URL:   /assets/javascripts/app.css?cb=4f41243847da693a4f356c0486114bc6
+	     #
+	     #   hard - (default) injects cachebusting checksum into processed filename:
+	     #
+	     #     source file:  _assets/javascripts/app.css
+	     #     output file:  _site/assets/javascriptis/app-4f41243847da693a4f356c0486114bc6.css
+	     #     output URL:   /assets/javascripts/app-4f41243847da693a4f356c0486114bc6.css
+	     #
+	     cachebust: hard
+	     #
+	     # Specifies list of MIME types that needs to have gzipped versions.
+	     # You can set it to `false` to disable gzipping. Only javascripts and
+	     # stylesheets are gzipped by default.
+	     #
+	     gzip: [ text/css, application/javascript ]
   </code>
 </pre>
 
 
-h2. Gallery Plugin (gallery_tag.rb):
+h2. Gallery Generator (gallery_generator_.rb):
 
-* create a new post (or page) in source/_posts and add the image_list liquid filter (don't forget to pass it the name of the gallery folder: e.g. in this post I am creating the image_list for the gallery_1 folder in images/galleries so i am passing the name of the corresponding folder 'gallery_1')
+* due to jekyll's own nature and the way it works, it is not possible to directly create some reference to your converted images as a liquid tag and have those display correctly. This generator is a sort of "hacked" plugin that creates a galleries.json file into your public directory that will be later used for parsing and displaying galleries on the relevant pages.
+
+You can either run it manually after site creation, or if you prefer you can edit your Rakefile and invoke it after site creation like this:
 
 <pre>
-  <code>
-    #source/_posts/gallery_post.textile
-    --- 
-    layout: post
-    title: gallery post
-    categories: my category
-    ---
-    
-      {{ 'gallery_1' | image_list }}
-      
-  </code>
+	<code>
+		#Rakefile
+		desc "Generate jekyll site"
+		task :generate do
+		  raise "### You haven't set anything up yet. First run `rake install` to set up an Octopress theme." unless File.directory?(source_dir)
+		  puts "## Generating Site with Jekyll"
+		  system "compass compile --css-dir #{source_dir}/_assets/stylesheets"
+		  system "jekyll"
+		  Rake::Task['generate_json_for_galleries'].invoke
+		end
+		
+		desc "generate galleries json"
+		task :generate_json_for_galleries do
+		  puts "generating galleries.json"
+		  Jekyll::GalleriesJsonGenerator.new.generate
+		end
+	</code>
 </pre>
 
-* edit or modify the generated code in gallery_tag.rb to make it work with lightbox, fancybox or any other additional piece of js you are using to enhance your generated image gallery list.
+h2. Gallery.js (gallery.js.coffee)
+
+* Once galleries.json has been created and added to your public folder, this coffeescript file simply creates and adds the image galleries to your octopress published posts or pages sections by referencing the data-attribute value defined in your markup. e.g. :
+
+<pre>
+	<code>
+		<section id="gallery" data-gallery="your_gallery_folder_name_here" />
+	</code>
+</pre>
 
 h2. Generate Site:
 
-* This will automatically call both plugins
+* This will automatically call the plugin (remember to create your galleries.json file before publishing and deploying on production!)
 
 <pre>
   <code>
@@ -103,3 +193,5 @@ h2. Credits:
 * "krig jekyll-plugins":https://github.com/krig/jekyll-plugins
 * "rough gallery plugin for jekyll":http://baldowl.github.com/2011/04/13/rough-gallery-plugin-for-jekyll.html
 * "jekyll filckr set tag":https://github.com/tsmango/jekyll_flickr_set_tag
+* "jekyll-assets plugin":https://github.com/ixti/jekyll-assets
+* "How to Setup a Rails-like Asset Pipeline With Octopress":http://matt.coneybeare.me/how-to-setup-a-rails-like-asset-pipeline-with-octopress/
